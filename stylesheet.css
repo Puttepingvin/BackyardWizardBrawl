@@ -1,0 +1,30 @@
+.status
+{
+    position: absolute;
+    top:0;
+    left:0;
+    font-size: 64px;
+}
+
+.options div
+{
+    font-size: 64px;
+    display: inline-block;
+    text-align: center;
+}
+
+.options
+{
+    display: inline-block;
+    width: fit-content;
+    position: absolute;
+    margin: auto;
+    left: 0;
+    right: 0;
+    bottom: 10%;
+}
+
+.options .selected
+{
+    font-size: 128px;
+}

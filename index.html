@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+
+<html lang="en">
+    <head>
+        <link rel="stylesheet" type="text/css" href="stylesheet.css" />
+        <title>Get ready to d.d.d.d.duel!</title>
+        <script type="text/javascript"></script>
+    </head>
+    <body style="position: absolute; width: 100%; height: 100%; padding: 0; margin: 0; overflow: hidden;"><!--
+        --><div id="left" style="display: inline-block; width: 50%; padding: 0; margin: 0; height: 100%; background-color: blue; position: absolute; top:0; left:0;">
+            <div class="status">
+                <b class="hearticon">❤️</b><b class="hp">3</b>
+                <b class="specialicon">🛡️</b><b class="special">0</b>
+            </div>
+            <div class="options">
+                <div class="fire">
+                    🔥
+                </div>
+                <div class="water">
+                    💧
+                </div>
+                <div class="earth">
+                    🧱
+                </div>
+            </div>
+        </div><!--
+        --><div id="right" style="display: inline-block; width: 50%; padding: 0; margin: 0; height: 100%; background-color: brown; position: absolute; top:0; right:0;">
+            <div class="status">
+                <b class="hearticon">❤️</b><b class="hp">3</b>
+                <b class="specialicon">🛡️</b><b class="special">0</b>
+            </div>
+            <div class="options">
+                <div class="fire">
+                    🔥
+                </div>
+                <div class="water">
+                    💧
+                </div>
+                <div class="earth">
+                    🧱
+                </div>
+            </div>
+        </div>
+        <script type="text/javascript">
+            const Fire = "fire";
+            const Water = "water";
+            const Earth = "earth";
+
+            class Player {
+                constructor(domElement) {
+                    this.domElement = domElement;
+                    this.elements = [];
+                }
+
+                addElement(elementName) {
+                    if (this.elements.length > 0) {
+                        this.deSelectElement(this.elements[this.elements.length - 1])
+                    }
+
+                    this.elements.push(elementName);
+                    this.selectElement(elementName);
+                }
+
+                removeElement(elementName) {
+                    const index = this.elements.indexOf(elementName);
+                    if (index > -1) {
+                        this.elements.splice(index, 1);
+                    }
+                    if (index === this.elements.length) {
+                        this.deSelectElement(elementName);
+                        if (this.elements.length > 0) {
+                            this.selectElement(this.elements[this.elements.length - 1]);                        
+                        }
+                    }
+                }
+
+                selectElement(elementName) {
+                    this.domElement.querySelector("." + elementName).classList.add("selected");
+                }
+
+                deSelectElement(elementName) {
+                    this.domElement.querySelector("." + elementName).classList.remove("selected");
+                }
+            }
+
+            const left = new Player(document.querySelector("#left"));
+            const right = new Player(document.querySelector("#right"));
+
+            addEventListener("keydown", (event) => {
+                if (event.repeat) return;
+                if (event.code === "KeyQ") {
+                    left.addElement(Fire);
+                }
+                if (event.code === "KeyW") {
+                    left.addElement(Water);
+                }
+                if (event.code === "KeyE") {
+                    left.addElement(Earth);
+                }
+                if (event.code === "KeyI") {
+                    right.addElement(Fire);
+                }
+                if (event.code === "KeyO") {
+                    right.addElement(Water);
+                }
+                if (event.code === "KeyP") {
+                    right.addElement(Earth);
+                }
+            });
+
+            addEventListener("keyup", (event) => {
+                if (event.code === "KeyQ") {
+                    left.removeElement(Fire);
+                }
+                if (event.code === "KeyW") {
+                    left.removeElement(Water);
+                }
+                if (event.code === "KeyE") {
+                    left.removeElement(Earth);
+                }
+                if (event.code === "KeyI") {
+                    right.removeElement(Fire);
+                }
+                if (event.code === "KeyO") {
+                    right.removeElement(Water);
+                }
+                if (event.code === "KeyP") {
+                    right.removeElement(Earth);
+                }
+            });
+        </script>
+    </body>
+</html>
