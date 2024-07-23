@@ -6,42 +6,46 @@
         <title>Get ready to d.d.d.d.duel!</title>
         <script type="text/javascript"></script>
     </head>
-    <body style="position: absolute; width: 100%; height: 100%; padding: 0; margin: 0; overflow: hidden;"><!--
-        --><div id="left" style="display: inline-block; width: 50%; padding: 0; margin: 0; height: 100%; background-color: blue; position: absolute; top:0; left:0;">
-            <div class="status">
-                <b class="hearticon">❤️</b><b class="hp">3</b>
-                <b class="specialicon">🛡️</b><b class="special">0</b>
-            </div>
-            <div class="options">
-                <div class="fire">
-                    🔥
+    <body style="position: absolute; width: 100%; height: 100%; padding: 0; margin: 0; overflow: hidden;">
+        <div id="left" style="display: inline-block; width: 50%; padding: 0; margin: 0; height: 100%; background-color: blue; position: absolute; top:0; left:0;">
+            <div class="playerInfo">
+                <div class="options">
+                    <div class="fire">
+                        🔥
+                    </div>
+                    <div class="water">
+                        💧
+                    </div>
+                    <div class="earth">
+                        🧱
+                    </div>
                 </div>
-                <div class="water">
-                    💧
-                </div>
-                <div class="earth">
-                    🧱
-                </div>
-            </div>
-        </div><!--
-        --><div id="right" style="display: inline-block; width: 50%; padding: 0; margin: 0; height: 100%; background-color: brown; position: absolute; top:0; right:0;">
-            <div class="status">
-                <b class="hearticon">❤️</b><b class="hp">3</b>
-                <b class="specialicon">🛡️</b><b class="special">0</b>
-            </div>
-            <div class="options">
-                <div class="fire">
-                    🔥
-                </div>
-                <div class="water">
-                    💧
-                </div>
-                <div class="earth">
-                    🧱
+                <div class="status">
+                    <b class="hearticon">❤️</b><b class="hp">3</b>
+                    <b class="specialicon">🛡️</b><b class="special">0</b>
                 </div>
             </div>
         </div>
-        <div id="middleText" style="display: inline-block;position: absolute;width: fit-content; left: 0;right: 0;top: 100px; margin: auto;font-size: 64px;color: white;">
+        <div id="right" style="display: inline-block; width: 50%; padding: 0; margin: 0; height: 100%; background-color: brown; position: absolute; top:0; right:0;">
+            <div class="playerInfo">
+                <div class="options">
+                    <div class="fire">
+                        🔥
+                    </div>
+                    <div class="water">
+                        💧
+                    </div>
+                    <div class="earth">
+                        🧱
+                    </div>
+                </div>
+                <div class="status">
+                    <b class="hearticon">❤️</b><b class="hp">3</b>
+                    <b class="specialicon">🛡️</b><b class="special">0</b>
+                </div>
+            </div>
+        </div>
+        <div id="middleText" style="display: inline-block;position: absolute;width: fit-content; height: fit-content; left: 0; right: 0; top: 0; bottom: 0; margin: auto;font-size: 64px;color: white;">
             VS
         </div>
         <div id="mask" style="background-color: black; position: absolute; top: 0; bottom: 0; right: 0; left: 0; opacity: 0.7;" class="hidden">
@@ -63,17 +67,40 @@
                 takeDamage() {
                     if (this.special > 0) {
                         this.special--;
-                        this.domElement.querySelector(".special").innerHTML = this.special;
+                        
+                        this.domElement.querySelector(".special").innerHTML = "-1";
+                        this.domElement.querySelector(".special").style.color = "red";
+
+                        setTimeout(() => {
+                            this.domElement.querySelector(".special").innerHTML = this.special;
+                            this.domElement.querySelector(".special").style.color = "black";
+                        }, 800);
                         return;
                     }
 
                     this.health--;
-                    this.domElement.querySelector(".hp").innerHTML = this.health;
+                    if (this.health === 0) {
+                        document.querySelector("#middleText").innerHTML = "Game Over!";
+                        clearInterval(gameLoop);
+                    }
+                    this.domElement.querySelector(".hp").innerHTML = "-1";
+                    this.domElement.querySelector(".hp").style.color = "red";
+
+                    setTimeout(() => {
+                        this.domElement.querySelector(".hp").innerHTML = this.health;
+                        this.domElement.querySelector(".hp").style.color = "black";
+                    }, 800);
                 }
 
                 gainSpecial() {
                     this.special++;
-                    this.domElement.querySelector(".special").innerHTML = this.special;
+                    this.domElement.querySelector(".special").innerHTML = "+1";
+                    this.domElement.querySelector(".special").style.color = "green";
+
+                    setTimeout(() => {
+                        this.domElement.querySelector(".special").innerHTML = this.special;
+                        this.domElement.querySelector(".special").style.color = "black";
+                    }, 800);
                 }
 
                 addElement(elementName) {
@@ -169,29 +196,26 @@
                 }
             });
 
-            var flashes = 0;
+            var countdown = 4;
             var casting = false;
 
-            setInterval(() => {
+            var gameLoop = setInterval(() => {
                 if (casting) return;
 
-                casting = true;
                 
-                const leftSelected = left.getSelected();
-                const rightSelected = right.getSelected();
-
+                
+                const middle = document.querySelector("#middleText");
+                middle.innerHTML = --countdown === 0 ? "Cast!" : countdown;
 
 //                document.querySelector("#mask").classList.remove("hidden");
 
-                setTimeout(() => {
-                    if (flashes++ < 2 || Math.random() > 0.33) {
-                        document.querySelector("#mask").classList.add("hidden");
-                        casting = false;
-                        left.updateSelection();
-                        right.updateSelection();
-                    }
-                    else {
-                        flashes = 0;
+                if (countdown === 0) {
+                    setTimeout(() => {
+                        const leftSelected = left.getSelected();
+                        const rightSelected = right.getSelected();
+                        casting = true;
+                        countdown = 4;
+                        middle.innerHTML = "";
 
                         if (leftSelected === Earth && rightSelected === Earth) {
                             // Nothing happens
@@ -247,10 +271,10 @@
                             document.querySelector("#mask").style.backgroundColor = "#000";
                             left.updateSelection();
                             right.updateSelection();
-                        }, 1800)
-                    }
+                        }, 1000)
                     
-                }, 200);
+                    }, 1000);
+                }
             }, 1000)
         </script>
     </body>
