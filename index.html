@@ -41,6 +41,12 @@
                 </div>
             </div>
         </div>
+        <div id="middleText" style="display: inline-block;position: absolute;width: fit-content; left: 0;right: 0;top: 100px; margin: auto;font-size: 64px;color: white;">
+            VS
+        </div>
+        <div id="mask" style="background-color: black; position: absolute; top: 0; bottom: 0; right: 0; left: 0; opacity: 0.7;" class="hidden">
+
+        </div>
         <script type="text/javascript">
             const Fire = "fire";
             const Water = "water";
@@ -50,15 +56,37 @@
                 constructor(domElement) {
                     this.domElement = domElement;
                     this.elements = [];
+                    this.health = 3;
+                    this.special = 0;
+                }
+
+                takeDamage() {
+                    if (this.special > 0) {
+                        this.special--;
+                        this.domElement.querySelector(".special").innerHTML = this.special;
+                        return;
+                    }
+
+                    this.health--;
+                    this.domElement.querySelector(".hp").innerHTML = this.health;
+                }
+
+                gainSpecial() {
+                    this.special++;
+                    this.domElement.querySelector(".special").innerHTML = this.special;
                 }
 
                 addElement(elementName) {
                     if (this.elements.length > 0) {
                         this.deSelectElement(this.elements[this.elements.length - 1])
                     }
-
+                    
                     this.elements.push(elementName);
-                    this.selectElement(elementName);
+                    
+                    if (!casting) {
+                        this.selectElement(elementName);
+                    }
+                    
                 }
 
                 removeElement(elementName) {
@@ -66,7 +94,7 @@
                     if (index > -1) {
                         this.elements.splice(index, 1);
                     }
-                    if (index === this.elements.length) {
+                    if (index === this.elements.length && !casting) {
                         this.deSelectElement(elementName);
                         if (this.elements.length > 0) {
                             this.selectElement(this.elements[this.elements.length - 1]);                        
@@ -80,6 +108,18 @@
 
                 deSelectElement(elementName) {
                     this.domElement.querySelector("." + elementName).classList.remove("selected");
+                }
+
+                updateSelection() {
+                    this.deSelectElement(Fire);
+                    this.deSelectElement(Water);
+                    this.deSelectElement(Earth);
+
+                    if (this.elements.length > 0) this.selectElement(this.elements[this.elements.length - 1]);
+                }
+
+                getSelected() {
+                    return this.elements[this.elements.length - 1];
                 }
             }
 
@@ -128,6 +168,90 @@
                     right.removeElement(Earth);
                 }
             });
+
+            var flashes = 0;
+            var casting = false;
+
+            setInterval(() => {
+                if (casting) return;
+
+                casting = true;
+                
+                const leftSelected = left.getSelected();
+                const rightSelected = right.getSelected();
+
+
+//                document.querySelector("#mask").classList.remove("hidden");
+
+                setTimeout(() => {
+                    if (flashes++ < 2 || Math.random() > 0.33) {
+                        document.querySelector("#mask").classList.add("hidden");
+                        casting = false;
+                        left.updateSelection();
+                        right.updateSelection();
+                    }
+                    else {
+                        flashes = 0;
+
+                        if (leftSelected === Earth && rightSelected === Earth) {
+                            // Nothing happens
+                        }
+                        else if (leftSelected === Fire && rightSelected === Fire) {
+                            left.takeDamage();
+                            right.takeDamage();
+                        }
+                        else if (leftSelected === Water && rightSelected === Water) {
+                            left.gainSpecial();
+                            right.gainSpecial();
+                        }
+                        else if(leftSelected === Fire && rightSelected === Water) {
+                            right.takeDamage();
+                        }
+                        else if(leftSelected === Water && rightSelected === Fire) {
+                            left.takeDamage();
+                        }
+                        else if(leftSelected === Fire && rightSelected === Earth) {
+                            left.takeDamage();
+                        }
+                        else if(leftSelected === Earth && rightSelected === Fire) {
+                            right.takeDamage();    
+                        }
+                        else if(leftSelected === Earth && rightSelected === Water) {
+                            right.gainSpecial();
+                        }
+                        else if(leftSelected === Water && rightSelected === Earth) {
+                            left.gainSpecial();
+                        }
+                        else if (leftSelected === Water) {
+                            left.gainSpecial();
+                        }
+                        else if (rightSelected === Water) {
+                            right.gainSpecial();
+                        }
+                        else if (leftSelected === Fire) {
+                            right.takeDamage();
+                        }
+                        else if (rightSelected === Fire) {
+                            left.takeDamage();
+                        }
+                        else if (leftSelected === Earth) {
+                        }
+                        else if (rightSelected === Water) {
+                        }
+                        
+                        document.querySelector("#mask").style.backgroundColor = "#FFF";
+
+                        setTimeout(() => {
+                            document.querySelector("#mask").classList.add("hidden");
+                            casting = false;
+                            document.querySelector("#mask").style.backgroundColor = "#000";
+                            left.updateSelection();
+                            right.updateSelection();
+                        }, 1800)
+                    }
+                    
+                }, 200);
+            }, 1000)
         </script>
     </body>
 </html>
